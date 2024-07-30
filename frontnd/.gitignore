@@ -17,6 +17,8 @@ Thumbs.db
 !.env.test
 README.md
 .npmrc
+.prettierignore
+.prettierrc
 
 # Vite
 vite.config.js.timestamp-*
