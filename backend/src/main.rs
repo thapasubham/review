@@ -38,6 +38,7 @@ async fn main() {
         .nest_service("/image/", serve_file)
         .route("/get_movies", get(reviews::movie::movies))
         .route("/members/login", post(members::user_api::login))
+        .route("/member/register", post(members::register::member_register))
         .route("/review/:movie_id", get(reviews::movie::get_details))
         .route("/review/:movie_id/review", get(reviews::movie::get_reviews))
         .route(
@@ -45,14 +46,19 @@ async fn main() {
             get(members::user_api::get_username),
         )
         .route("/member/logout", get(members::user_api::logout))
-        .route("/upload", post(admin::movie::upload))
+        .route("/admin/login", post(admin::login::login_admin))
+        .route("/admin/upload", post(admin::movie::upload))
+        .route("/upload", post(admin::movie::what))
         .with_state(pool)
         .layer(
             CorsLayer::new()
                 .allow_origin(Any)
                 .allow_methods(Any)
                 .allow_headers(Any),
-        );
+        )
+        .layer(tower_http::limit::RequestBodyLimitLayer::new(
+            1024 * 1024 * 5,
+        ));
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     println!("listening on http://{}", addr);
     axum::Server::bind(&addr)

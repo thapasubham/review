@@ -8,7 +8,7 @@ use axum::{
 };
 
 use serde::{Deserialize, Serialize};
-use sqlx::{query_as, MySqlPool};
+use sqlx::{query, query_as, MySqlPool};
 use std::env;
 #[derive(Deserialize)]
 pub struct LoginRequest {
@@ -87,4 +87,30 @@ pub async fn get_username(
 pub async fn logout() -> impl IntoResponse {
     let logout = r#"{"message": "Logged out successfully"}"#;
     logout
+}
+
+pub struct RegisterPayload {
+    firstname: String,
+    lastname: String,
+    username: String,
+    phone: String,
+    email: String,
+    password: String,
+}
+
+pub async fn member_register(
+    State(pool): State<MySqlPool>,
+    Json(payload): Json<RegisterPayload>,
+) -> impl IntoResponse {
+    let result = query!(
+        "Select username, email from members where username =?",
+        payload.username
+    )
+    .fetch_one(&pool)
+    .await
+    .expect("Failed to query");
+
+    if payload.username == result.username {
+        "Username already exists";
+    }
 }

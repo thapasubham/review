@@ -83,6 +83,6 @@ pub async fn movies(State(pool): State<MySqlPool>) -> impl IntoResponse {
     let result = query_as!(Movie_ID, "SELECT movie_id FROM movie ")
         .fetch_all(&pool)
         .await
-        .expect("idk some error");
+        .expect("Failed to get the movie details");
     Json(result)
 }
