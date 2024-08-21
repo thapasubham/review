@@ -1,16 +1,17 @@
 <script>
-	// @ts-nocheck
-
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import MovieDetails from '../movielist/MovieDetails.svelte';
 	import { fetchMovieDetails } from './review';
 	import { fetchReviews } from './review';
+	import HeaderComp from '../HeaderComp.svelte';
+	let loggedIn;
+
+	//const token = cookies.get('token');
 	let id = $page.url.searchParams.get('id');
 	let movie = '';
 	let reviews = '';
 	let averageStar = 0.0;
-	console.log('ID from URL:', id);
 	onMount(async () => {
 		try {
 			const data = await fetchMovieDetails(id);
@@ -19,11 +20,13 @@
 
 			reviews = await fetchReviews(id);
 		} catch (error) {
+			('');
 			console.error('Error in component:', error);
 		}
 	});
 </script>
 
+<HeaderComp />
 <div class="outer_box">
 	<div class="movie_box">
 		<img
@@ -41,20 +44,15 @@
 	</div>
 </div>
 
-<div>
-	{#each reviews as review}
-		{review.firstname}
-		{review.review_msg}
-		{review.star}
-		<br />
-	{/each}
-</div>
+<div class="comments"></div>
 
 <style>
 	@import '../../body.css';
 	.outer_box {
 		display: flex;
+
 		flex-wrap: wrap;
+		height: 600px;
 		justify-content: space-around;
 		padding: 20px;
 	}
@@ -63,15 +61,16 @@
 	}
 
 	.movie_box {
-		width: 20%;
-		height: 50%;
-		margin: 20px 0;
-		padding: 15px;
+		width: 500px;
+		height: auto;
+
+		padding: 10px;
 		background-color: #040f25;
 		border-radius: 5px;
 		box-shadow: 0 0 10px rgba(255, 0255, 255, 0.2);
-		transition: transform 0.3s;
 		text-align: center;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.movie_name {
@@ -83,8 +82,8 @@
 	}
 
 	.image {
-		max-width: 100%;
-		max-height: 200px;
+		height: 400px;
+		max-width: 400px;
 		border-radius: 5px;
 		margin-top: 5px;
 	}

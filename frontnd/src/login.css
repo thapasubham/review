@@ -1,0 +1,32 @@
+.algner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+a {
+    color: blue;
+}
+button {
+    background-color: blue;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+}
+button:hover{
+    background-color: #00a2ff;
+}
+a:hover {
+    color: #00a2ff;
+    cursor: pointer;
+}

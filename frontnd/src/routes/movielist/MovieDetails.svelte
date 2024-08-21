@@ -20,30 +20,24 @@
 			movie = data.movie;
 			averageStar = parseFloat(data.star); // Convert string to number
 			console.log('Movie data:', movie); // Debugging statement
-			console.log('Average star:', average_star_str); // Debugging statement
+			console.log('Average star:', averageStar); // Debugging statement
 		} catch (error) {
 			console.error('Error fetching movie details:', error);
 		}
 	});
 </script>
 
-<div class="outer_box">
-	<div class="movie_box">
-		<img
-			class="image"
-			src={`http://127.0.0.1:3000/image/${movie.img_name}`}
-			alt={movie.movie_name}
-		/>
-		<p class="movie_name">{movie.movie_name}</p>
-		<p class="year">Releases: {movie.released}</p>
-		{#if averageStar == null}
-			<p>No reviews yet</p>
-			<a href={`/movie/${movie.movie_id}`}>Add one</a>
-		{:else}
-			<p>Average rating: {averageStar}</p>
-			<a href={`/review/?id=${movie.movie_id}`}>Check Reviews</a>
-		{/if}
-	</div>
+<div class="movie_box">
+	<img class="image" src={`http://127.0.0.1:3000/image/${movie.img_name}`} alt={movie.movie_name} />
+	<p class="movie_name">{movie.movie_name}</p>
+	<p class="year">Releases: {movie.released}</p>
+	{#if averageStar == null}
+		<p>No reviews yet</p>
+		<a href={`/movie/${movie.movie_id}`}>Add one</a>
+	{:else}
+		<p>Average rating: {averageStar}</p>
+		<a href={`/review/?id=${movie.movie_id}`}>Check Reviews</a>
+	{/if}
 </div>
 
 <style>
@@ -87,6 +81,15 @@
 		max-height: 200px;
 		border-radius: 5px;
 		margin-top: 5px;
+	}
+	a {
+		text-align: right;
+		text-decoration: none;
+		color: #fff;
+		font-weight: bold;
+	}
+	a:hover {
+		color: rgb(18, 2, 195);
 	}
 	.link {
 		margin-top: 5px;

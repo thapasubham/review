@@ -6,7 +6,6 @@
 	onMount(async () => {
 		await logout();
 
-		// Redirect to the home page
 		goto('/');
 	});
 	function deleteCookie(name) {
@@ -14,7 +13,6 @@
 	}
 	async function logout() {
 		try {
-			// Make a request to the backend to invalidate the session or token
 			const response = await fetch('http://127.0.1:3000/member/logout');
 			const msg = await response.json();
 			const mesg = msg.message;
@@ -23,8 +21,6 @@
 			if (!response.ok) {
 				throw new Error('Logout failed');
 			}
-
-			// Optionally clear any local storage or state here if needed
 		} catch (error) {
 			console.error('Logout error:', error);
 		}

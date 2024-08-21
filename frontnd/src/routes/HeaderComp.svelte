@@ -40,8 +40,9 @@
 		<div class="left-name">Review IT</div>
 		<ul>
 			<li><a href="/">Home</a></li>
+			<li><a href="/movielist">Movie List</a></li>
 			{#if loggedIn}
-				<li><a href="/profile">{userName.firstname}</a></li>
+				<li><a href="/profile">My Profile</a></li>
 				<li><a href="/logout">Logout</a></li>
 			{:else}
 				<li><a href="/login">Login</a></li>

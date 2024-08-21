@@ -1,25 +1,19 @@
 <script>
-	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { redirect } from '@sveltejs/kit';
 
 	let username = '';
 	let password = '';
-	let error = '';
-	//let token = load();
 
-	// Handle form submission
 	async function handleSubmit() {
-		const response = await fetch('http://127.0.0.1:3000/members/login', {
+		const response = await fetch('http://127.0.0.1:3000/admin/login', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ username, password })
 		});
-		const result = await response.json();
-		if (response.ok) {
-			document.cookie = `token=${result.m_id}; path=/;`;
-			goto(result.redirect_to);
-		} else {
-			error = result.error || 'An unknown error occurred.';
+
+		const data = response.json();
+		if (data.sucess) {
+			redirect;
 		}
 	}
 </script>
@@ -27,9 +21,9 @@
 <div class="first-container">
 	<h1>Login</h1>
 	<div class="container">
-		{#if error}
+		<!-- {#if error}
 			<p>{error}</p>
-		{/if}
+		{/if} -->
 
 		<form on:submit|preventDefault={handleSubmit}>
 			<label for="username">Username:</label>
@@ -48,7 +42,7 @@
 </div>
 
 <style>
-	@import '../../style.css';
 	@import '../../body.css';
+	@import '../../style.css';
 	@import '../../login.css';
 </style>
