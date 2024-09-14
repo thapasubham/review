@@ -1,13 +1,21 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { blur } from 'svelte/transition';
+	import { checkCookie } from './check';
 
 	let username = '';
 	let password = '';
 	let error = '';
-	//let token = load();
 
-	// Handle form submission
+	if (typeof window !== 'undefined') {
+		const { token } = checkCookie();
+		if (token) {
+			alert('Aready logged in');
+
+			goto('/');
+		}
+	}
+
 	async function handleSubmit() {
 		const response = await fetch('http://127.0.0.1:3000/members/login', {
 			method: 'POST',

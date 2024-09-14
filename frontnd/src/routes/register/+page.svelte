@@ -1,4 +1,6 @@
 <script>
+	import { goto } from '$app/navigation';
+
 	export let firstname = '';
 	export let lastname = '';
 	export let username = '';
@@ -100,8 +102,12 @@
 		});
 
 		const data = await response.json();
-		if (data.response) {
+		if (data.result == 'error') {
 			alert(data.response + '\n');
+		}
+		if (data.result == 'success') {
+			alert(data.response);
+			goto('/login');
 		}
 	}
 
@@ -203,7 +209,7 @@
 				>
 				<div id="password_error">{passwordError}</div>
 
-				<input type="submit" name="submit" />
+				<input type="submit" name="submit" value="Register" />
 				<a href="/login">Login</a>
 			</form>
 		</div>

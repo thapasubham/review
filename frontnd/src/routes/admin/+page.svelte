@@ -12,7 +12,7 @@
 		});
 
 		const data = response.json();
-		if (data.sucess) {
+		if (data.success) {
 			redirect;
 		}
 	}
@@ -21,10 +21,6 @@
 <div class="first-container">
 	<h1>Login</h1>
 	<div class="container">
-		<!-- {#if error}
-			<p>{error}</p>
-		{/if} -->
-
 		<form on:submit|preventDefault={handleSubmit}>
 			<label for="username">Username:</label>
 			<input type="text" id="username" bind:value={username} required />

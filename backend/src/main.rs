@@ -49,6 +49,7 @@ async fn main() {
         .route("/admin/login", post(admin::login::login_admin))
         .route("/admin/upload", post(admin::movie::upload))
         .route("/upload", post(admin::movie::what))
+        .route("/review/add", post(reviews::new::insert))
         .with_state(pool)
         .layer(
             CorsLayer::new()
@@ -66,4 +67,3 @@ async fn main() {
         .await
         .unwrap();
 }
-// Define the fallible service

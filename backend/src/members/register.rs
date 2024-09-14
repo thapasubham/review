@@ -78,7 +78,7 @@ pub async fn member_register(
         };
 
         response.response.push(message);
-        response.result = "Sucess".to_string();
+        response.result = "success".to_string();
     }
 
     Json(response)

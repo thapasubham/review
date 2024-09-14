@@ -5,6 +5,7 @@
 
 	let userName = '';
 	let loggedIn = false;
+
 	onMount(async () => {
 		// Retrieve cookies from the document
 		const cookieHeader = document.cookie;
