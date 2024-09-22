@@ -39,6 +39,10 @@
 			console.error('Error in component:', error);
 		}
 	});
+
+	function async handleSubmit(){
+ const response = await fetch(`http://`)
+	}
 </script>
 
 <HeaderComp />
@@ -71,11 +75,23 @@
 			</div>
 		</div>
 	{:else}
-		<p>pp</p>
+<form on:submit|preventDefault={handleSubmit}></form>
+        <label>Add your review</label>
+        <input type="text" name="review"  bind:value={MessageChannel} required>
+        <input type="hidden" name="movie_id" value="{movie.movie_id}">
+        Rating <select name="star" required>
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+							</select>
+        <input type="Submit" value="Submit">
+    </form>
 	{/if}
 	<div class="comments-box">
 		{#each reviews as review}
-			{#if review.reviewed_by != userReview.reviewed_by}
+			{#if review.reviewed_by != userReview?.reviewed_by}
 				<div class="each-comment">
 					<p style="font-weight: bold;">{review.firstname}</p>
 
