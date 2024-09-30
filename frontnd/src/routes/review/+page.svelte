@@ -1,23 +1,22 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import MovieDetails from '../movielist/MovieDetails.svelte';
-	import { fetchMovieDetails } from './review';
-	import { fetchReviews } from './review';
+	import { fetchMovieDetails, fetchReviews } from './review';
 	import HeaderComp from '../HeaderComp.svelte';
-	let loggedIn;
 
 	let id = $page.url.searchParams.get('id');
 	let movie = '';
-	let reviews = '';
+	let reviews = [];
 	let averageStar = 0.0;
-	let userReview = '';
-	const token = '';
+	let userReview = null;
+	let msg = '';
+	let edit = false;
+	let token = '';
+
 	onMount(async () => {
 		const cookieHeader = document.cookie;
-		// @ts-ignore
 		const cookies = new Map(cookieHeader.split('; ').map((cookie) => cookie.split('=')));
-		const token = cookies.get('token');
+		token = cookies.get('token');
 
 		try {
 			const data = await fetchMovieDetails(id);
@@ -25,27 +24,95 @@
 			averageStar = parseFloat(data.star);
 
 			reviews = await fetchReviews(id);
-
-			userReview = await reviews.find((reviews) => reviews.reviewed_by == token);
-
-			if (userReview) {
-				console.log(userReview.reviewed_by);
-				console.log(token);
-			} else {
-				console.log('You havent reviewed');
-			}
+			userReview = reviews.find((review) => review.reviewed_by == token);
 		} catch (error) {
-			('');
 			console.error('Error in component:', error);
 		}
 	});
 
-	function async handleSubmit(){
- const response = await fetch(`http://`)
+	let star = '';
+	function edited() {
+		edit = true;
+
+		msg = userReview.review_msg;
+
+		star = userReview.star;
+		console.log(star);
+	}
+
+	async function deleteReview() {
+		try {
+			const response = await fetch(`http://127.0.0.1:3000/review/delete/${userReview.review_id}`, {
+				method: 'DELETE'
+			});
+
+			const result = await response.json();
+			if (response.ok) {
+				window.location.reload();
+				alert(result); // Show success message
+			} else {
+				throw new Error(result);
+			}
+		} catch (error) {
+			console.error('Error deleting review:', error);
+		}
+	}
+
+	async function handleSubmit(event) {
+		event.preventDefault(); // Prevent default form submission
+
+		const formData = new FormData(event.target); // Collect form data
+		const reviewedById = parseInt(token);
+
+		try {
+			const payload = JSON.stringify({
+				reviewed_by: reviewedById,
+				movie_id: parseInt(id),
+				review_msg: msg,
+				star: parseInt(formData.get('star'))
+			});
+
+			let response;
+			if (edit === false) {
+				response = await fetch('http://127.0.0.1:3000/review/add', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: payload
+				});
+			} else {
+				response = await fetch(`http://127.0.0.1:3000/review/edit/`, {
+					method: 'PUT', // Use PUT for updates
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: payload
+				});
+				edit = false;
+			}
+
+			// Check if the response is not empty
+			const resultText = await response.text();
+			if (resultText) {
+				const result = JSON.parse(resultText); // Parse response only if not empty
+				if (!response.ok) {
+					throw new Error('Network response was not ok');
+				}
+				alert(result);
+				window.location.reload(); // Use the message from the backend
+				console.log(result);
+			} else {
+				console.log('No response data received');
+			}
+		} catch (error) {
+			console.error('Error submitting review:', error);
+		}
 	}
 </script>
 
 <HeaderComp />
+
 <div class="outer_box">
 	<div class="movie_box">
 		<img
@@ -55,7 +122,7 @@
 		/>
 		<p class="movie_name">{movie.movie_name}</p>
 		<p class="genre">{movie.genre}</p>
-		<p class="year">Releases: {movie.released}</p>
+		<p class="year">Released: {movie.released}</p>
 		{#if averageStar == null}
 			<p>No reviews yet</p>
 		{:else}
@@ -63,49 +130,66 @@
 		{/if}
 	</div>
 </div>
-{#if reviews.length == 0}
-	<p>No reviews Yet</p>
-{:else}
-	{#if userReview}
+
+<!-- Show review form if userReview doesn't exist or user clicked Edit -->
+{#if token}
+	{#if !userReview || edit}
+		<div class="comments-box">
+			<div class="each-comment">
+				<form on:submit={handleSubmit}>
+					<label>Add your review</label>
+					<input type="text" name="review_msg" bind:value={msg} required />
+					<input type="hidden" name="movie_id" value={movie.movie_id} />
+					<label>Rating</label>
+					<select name="star" value={star} required>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+					</select>
+					<input type="submit" value="Submit" />
+				</form>
+			</div>
+		</div>
+	{/if}
+
+	<!-- Show user review if exists and not in edit mode -->
+	{#if userReview && !edit}
 		<div class="comments-box">
 			<div class="each-comment">
 				<p style="font-weight: bold;">Your Review</p>
 				<p>{userReview.review_msg}</p>
 				<p>Rating: {userReview.star}</p>
+				<button on:click={edited}>Edit</button>
+
+				<button on:click={deleteReview}>Delete</button>
 			</div>
 		</div>
-	{:else}
-<form on:submit|preventDefault={handleSubmit}></form>
-        <label>Add your review</label>
-        <input type="text" name="review"  bind:value={MessageChannel} required>
-        <input type="hidden" name="movie_id" value="{movie.movie_id}">
-        Rating <select name="star" required>
-								<option value="1">1</option>
-								<option value="2">2</option>
-								<option value="3">3</option>
-								<option value="4">4</option>
-								<option value="5">5</option>
-							</select>
-        <input type="Submit" value="Submit">
-    </form>
 	{/if}
+{:else}
+	<p style="text-align: center;"><a href="/login">Login</a> To add review</p>
+{/if}
+<!-- Show other reviews -->
+{#if reviews.length == 0}
+	<p style="text-align: center">No reviews yet</p>
+{:else}
 	<div class="comments-box">
 		{#each reviews as review}
-			{#if review.reviewed_by != userReview?.reviewed_by}
+			{#if review.reviewed_by !== userReview?.reviewed_by}
 				<div class="each-comment">
 					<p style="font-weight: bold;">{review.firstname}</p>
-
 					<p>{review.review_msg}</p>
-					<p>
-						{review.star}
-					</p>
+					<p>Rating: {review.star}</p>
 				</div>
 			{/if}
 		{/each}
-	</div>{/if}
+	</div>
+{/if}
 
 <style>
 	@import '../../body.css';
+	@import '../../style.css';
 	.outer_box {
 		display: flex;
 		flex-wrap: wrap;
@@ -161,6 +245,21 @@
 
 		padding: 20px;
 		border-radius: 5px;
+	}
+
+	button {
+		background-color: #007bff;
+		color: #fff;
+		padding: 5px 10px;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		font-size: 16px;
+		margin-top: 5px;
+	}
+
+	button:hover {
+		background-color: #0056b3;
 	}
 	.each-comment {
 		width: auto;

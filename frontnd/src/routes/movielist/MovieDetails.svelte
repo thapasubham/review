@@ -31,11 +31,11 @@
 	<img class="image" src={`http://127.0.0.1:3000/image/${movie.img_name}`} alt={movie.movie_name} />
 	<p class="movie_name">{movie.movie_name}</p>
 	<p class="year">Releases: {movie.released}</p>
-	{#if averageStar == null}
+	{#if averageStar == 0}
 		<p>No reviews yet</p>
-		<a href={`/movie/${movie.movie_id}`}>Add one</a>
+		<a href={`/review/?id=${movie.movie_id}`}>Add one</a>
 	{:else}
-		<p>Average rating: {averageStar}</p>
+		<p>Average rating: {averageStar.toFixed(1)}</p>
 		<a href={`/review/?id=${movie.movie_id}`}>Check Reviews</a>
 	{/if}
 </div>

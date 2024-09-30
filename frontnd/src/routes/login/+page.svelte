@@ -27,6 +27,7 @@
 			document.cookie = `token=${result.m_id}; path=/;`;
 			goto(result.redirect_to);
 		} else {
+			alert(result.error);
 			error = result.error || 'An unknown error occurred.';
 		}
 	}

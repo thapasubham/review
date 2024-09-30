@@ -1,9 +1,24 @@
 <script>
+	import { onMount } from 'svelte';
+
+	// @ts-nocheck
+
+	import Dashboard from '../dashboard.svelte';
+	import { goto } from '$app/navigation';
+
 	let name = '';
 	let released = '';
 	let bio = '';
 	let genre = 'Comedy';
 	let file = File;
+
+	onMount(() => {
+		const token = localStorage.getItem('token');
+		if (!token) {
+			// If token exists, redirect to home
+			goto('/admin');
+		}
+	});
 
 	async function handleSubmit(event) {
 		event.preventDefault();
@@ -27,39 +42,37 @@
 	}
 </script>
 
-<form on:submit|preventDefault={handleSubmit} enctype="multipart/form-data">
-	<label>Movie Name</label>
-	<input type="text" bind:value={name} required />
+<Dashboard />
+<div class="form-box">
+	<form on:submit|preventDefault={handleSubmit} enctype="multipart/form-data">
+		<label>Movie Name</label>
+		<input type="text" bind:value={name} required />
 
-	<label>Released Year</label>
-	<input type="text" bind:value={released} required />
+		<label>Released Year</label>
+		<input type="text" bind:value={released} required />
 
-	<label>About Movie</label>
-	<input type="text" bind:value={bio} required />
+		<label>About Movie</label>
+		<textarea bind:value={bio} required></textarea>
 
-	<label>Genre</label>
-	<select bind:value={genre}>
-		<option value="Comedy">Comedy</option>
-		<option value="Action">Action</option>
-		<option value="Crime">Crime</option>
-		<option value="Thriller">Thriller</option>
-		<option value="Sci-Fi">Sci-Fi</option>
-	</select>
+		<label>Genre</label>
+		<select bind:value={genre}>
+			<option value="Comedy">Comedy</option>
+			<option value="Action">Action</option>
+			<option value="Crime">Crime</option>
+			<option value="Thriller">Thriller</option>
+			<option value="Sci-Fi">Sci-Fi</option>
+		</select>
 
-	<label>Upload Image</label>
-	<input type="file" accept="image/png, image/jpeg" bind:files={file} required />
+		<label>Upload Image</label>
+		<input type="file" accept="image/png, image/jpeg" bind:files={file} required />
 
-	<button type="submit">Submit</button>
-</form>
+		<button type="submit">Submit</button>
+	</form>
+</div>
 
 <style>
-	body {
-		background-color: #042425;
-		color: #fff;
-		font-family: Arial, sans-serif;
-		margin: 0;
-		padding: 0;
-	}
+	@import '../body.css';
+
 	.form-box {
 		padding: 20px;
 		border-radius: 5px;
@@ -83,6 +96,7 @@
 	label {
 		display: block;
 		font-weight: bold;
+		margin-top: 10px;
 		margin-bottom: 5px;
 	}
 
@@ -105,7 +119,16 @@
 		font-size: 16px;
 		margin-top: 10px;
 	}
-
+	textarea {
+		stroke: none;
+		width: 98%;
+		height: 100px;
+		padding: 10px;
+		margin-top: 5px;
+		border: 1px solid #ccc;
+		border-radius: 5px;
+		font-size: 16px;
+	}
 	input[type='submit']:hover {
 		background-color: #0056b3;
 	}

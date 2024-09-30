@@ -7,7 +7,7 @@ use axum::{
     extract::Path,
     http::{Request, Response, StatusCode},
     response::IntoResponse,
-    routing::{get, post},
+    routing::{delete, get, post, put},
     Error, Router,
 };
 
@@ -39,6 +39,14 @@ async fn main() {
         .route("/get_movies", get(reviews::movie::movies))
         .route("/members/login", post(members::user_api::login))
         .route("/member/register", post(members::register::member_register))
+        .route(
+            "/member/update/username",
+            put(members::update::update_username),
+        )
+        .route(
+            "/member/update/password",
+            put(members::update::update_password),
+        )
         .route("/review/:movie_id", get(reviews::movie::get_details))
         .route("/review/:movie_id/review", get(reviews::movie::get_reviews))
         .route(
@@ -48,8 +56,15 @@ async fn main() {
         .route("/member/logout", get(members::user_api::logout))
         .route("/admin/login", post(admin::login::login_admin))
         .route("/admin/upload", post(admin::movie::upload))
-        .route("/upload", post(admin::movie::what))
-        .route("/review/add", post(reviews::new::insert))
+        .route("/admin/movie/edit", put(admin::movie::edit_movie))
+        .route("/admin/movie", get(admin::movie::get_movies))
+        .route("/admin/movie/:m_id", get(admin::movie::get_movie))
+        .route("/review/edit", put(reviews::review::edit))
+        .route("/review/add", post(reviews::review::insert))
+        .route(
+            "/review/delete/:r_id",
+            delete(reviews::review::delete_review),
+        )
         .with_state(pool)
         .layer(
             CorsLayer::new()

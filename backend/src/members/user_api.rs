@@ -9,7 +9,7 @@ use axum::{
 
 use serde::{Deserialize, Serialize};
 use sqlx::{query, query_as, MySqlPool};
-use std::env;
+
 #[derive(Deserialize)]
 pub struct LoginRequest {
     username: String,

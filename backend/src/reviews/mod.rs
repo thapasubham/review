@@ -1,2 +1,2 @@
 pub mod movie;
-pub mod new;
+pub mod review;

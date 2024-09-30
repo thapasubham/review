@@ -1,4 +1,4 @@
-use axum::{extract::State, response::IntoResponse, Json};
+use axum::{extract::State, http::StatusCode, response::IntoResponse, Json};
 use serde::{Deserialize, Serialize};
 
 use sqlx::MySqlPool;
@@ -14,6 +14,7 @@ pub struct AdminResponse {
     admin_id: i32,
     sucess: bool,
 }
+
 pub async fn login_admin(
     State(pool): State<MySqlPool>,
     Json(payload): Json<LoginPayload>,
@@ -22,18 +23,30 @@ pub async fn login_admin(
         admin_id: 0,
         sucess: false,
     };
+
+    // Debugging output
+    println!("Received login attempt for user: {}", payload.username);
+
     let row = sqlx::query!(
-        "SELECT admin_id,username, password from admin where username =? ",
+        "SELECT admin_id, username, password FROM admin WHERE username = ?",
         payload.username,
     )
     .fetch_optional(&pool)
     .await;
+
     if let Ok(Some(row)) = row {
-        if row.password == payload.password {
+        println!("{}  {}", row.username, row.password);
+        // Verify password
+        if (&payload.password == &row.password) {
             println!("{}", row.admin_id);
             response.admin_id = row.admin_id;
             response.sucess = true;
         }
     }
-    Json(response)
+
+    if response.sucess {
+        (StatusCode::OK, Json(response))
+    } else {
+        (StatusCode::UNAUTHORIZED, Json(response))
+    }
 }

@@ -1,10 +1,10 @@
 use axum::{
-    extract::{Multipart, State},
+    extract::{Multipart, Path, State},
     http::{Response, StatusCode},
     response::{ErrorResponse, IntoResponse, Json},
 };
-use serde::Serialize;
-use sqlx::MySqlPool;
+use serde::{Deserialize, Serialize};
+use sqlx::{query_as, MySqlPool};
 use tokio::fs::{self, File};
 use tokio::io::AsyncWriteExt;
 use tracing_subscriber::fmt::format;
@@ -15,19 +15,19 @@ pub struct MovieResponse {
     success: bool,
 }
 
-pub async fn what(mut multipart: Multipart) -> impl IntoResponse {
-    while let Some(mut field) = multipart.next_field().await.unwrap() {
-        println!("{}", field.file_name().unwrap().to_string());
-        let file_name = field.file_name().unwrap().to_string();
-        let file_path = format!("src/images/{}", file_name);
-        let mut file = File::create(file_path).await.unwrap();
+// pub async fn what(mut multipart: Multipart) -> impl IntoResponse {
+//     while let Some(mut field) = multipart.next_field().await.unwrap() {
+//         println!("{}", field.file_name().unwrap().to_string());
+//         let file_name = field.file_name().unwrap().to_string();
+//         let file_path = format!("src/images/{}", file_name);
+//         let mut file = File::create(file_path).await.unwrap();
 
-        while let Some(chunk) = field.chunk().await.unwrap() {
-            file.write_all(&chunk).await.unwrap();
-        }
-    }
-    (StatusCode::OK, "File uploaded successfully")
-}
+//         while let Some(chunk) = field.chunk().await.unwrap() {
+//             file.write_all(&chunk).await.unwrap();
+//         }
+//     }
+//     (StatusCode::OK, "File uploaded successfully")
+// }
 
 pub async fn upload(State(pool): State<MySqlPool>, mut multipart: Multipart) -> impl IntoResponse {
     let mut name = String::new();
@@ -99,4 +99,81 @@ pub async fn upload(State(pool): State<MySqlPool>, mut multipart: Multipart) -> 
     }
 
     Json(response).into_response()
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct EditMoviePayload {
+    pub movie_id: i32,
+    pub name: String,
+    pub released: String,
+    pub bio: String,
+    pub genre: String,
+    
+}
+pub async fn edit_movie(
+    State(pool): State<MySqlPool>,
+    Json(payload): Json<EditMoviePayload>,
+) -> impl IntoResponse {
+    let mut response = MovieResponse {
+        message: String::new(),
+        success: false,
+    };
+
+    // Update the movie in the database
+    let result = sqlx::query!(
+        "UPDATE movie SET movie_name = ?,  released = ?, about_movie = ?, genre = ? WHERE movie_id = ?",
+        payload.name,   
+        payload.released,
+        payload.bio,
+        payload.genre,
+        payload.movie_id,
+    )
+    .execute(&pool)
+    .await;
+
+    match result {
+        Ok(_) => {
+            response.message = "Movie successfully updated".to_string();
+            response.success = true;
+        }
+        Err(e) => {
+            response.message = format!("Failed to update movie: {}", e);
+            response.success = false;
+        }
+    }
+
+    Json(response).into_response()
+}
+
+#[derive(Serialize)]
+struct Movie {
+    movie_id: i32,
+    movie_name: String,
+    about_movie: String,
+    img_name: String,
+    genre: String,
+    released: i32,
+}
+pub async  fn get_movies(State(pool): State<MySqlPool>) -> impl IntoResponse{
+    let details = query_as!(
+        Movie,
+        "Select movie_id,  movie_name, about_movie, img_name, genre, released from movie  "
+        
+    )
+    .fetch_all(&pool)
+    .await
+    .expect("Failed to resolve");
+    Json(details)
+}
+
+pub async  fn get_movie(State(pool): State<MySqlPool>, Path(m_id): Path<i16>) -> impl IntoResponse{
+    let details = query_as!(
+        Movie,
+        "Select movie_id,  movie_name, about_movie, img_name, genre, released from movie  where movie_id=?",
+        m_id
+    )
+    .fetch_one(&pool)
+    .await
+    .expect("Failed to resolve");
+    Json(details)
 }

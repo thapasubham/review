@@ -1,3 +1,4 @@
+// @ts-ignore
 export async function fetchMovieDetails(id) {
     try {
       const response = await fetch(`http://127.0.0.1:3000/review/${id}`);
@@ -12,6 +13,7 @@ export async function fetchMovieDetails(id) {
     }
   }
 
+  // @ts-ignore
   export async function fetchReviews(id){
     try {
         const response = await fetch(`http://127.0.0.1:3000/review/${id}/review`);
@@ -25,3 +27,4 @@ export async function fetchMovieDetails(id) {
         throw error; // Rethrow the error for handling in the component
       }
   }
+
