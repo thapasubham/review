@@ -5,6 +5,7 @@
 			<ul>
 				<li><a href="/admin/upload">Add Movie</a></li>
 				<li><a href="/admin/viewUsers">View Users</a></li>
+				<li><a href="/admin/viewMovies">Movie</a></li>
 				<li><a href="/admin/home">Home</a></li>
 				<li><a href="/admin/logout">Logout</a></li>
 			</ul>

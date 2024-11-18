@@ -9,18 +9,19 @@
 
 <div class="movie_box">
 	<img class="image" src={`http://127.0.0.1:3000/image/${img_name}`} alt={name} />
-	<h2>{name}</h2>
-
+	<h3>{name}</h3>
 	<p>Released: {released}</p>
 	<p>Genre: {genre}</p>
 	<a href="/admin/edit-movie/?m_id={id}&img={img_name}">Edit</a>
+	|
+	<a href="/admin/review/?m_id={id}">Check Review</a>
 </div>
 
 <style>
 	@import '../body.css';
 	.movie_box {
 		width: 20%;
-		height: 50%;
+		max-height: 350px;
 		margin: 20px 0;
 		padding: 15px;
 		background-color: #040f25;
@@ -35,7 +36,7 @@
 	}
 
 	.movie_name {
-		font-weight: bold;
+		font-size: 20px;
 	}
 
 	.year {

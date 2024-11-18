@@ -38,7 +38,11 @@
 			}
 		});
 		const data = await response.json();
-		alert(data.message);
+		if (data.success == true) {
+			goto('/admin');
+		} else if (data.success == false) {
+			alert(data.message);
+		}
 	}
 </script>
 

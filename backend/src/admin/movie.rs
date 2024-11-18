@@ -65,7 +65,7 @@ pub async fn upload(State(pool): State<MySqlPool>, mut multipart: Multipart) -> 
         }
     }
 
-    println!("{}", file_name);
+    // println!("{}", file_name);
     let check = sqlx::query!("SELECT movie_name FROM movie WHERE movie_name = ?", name)
         .fetch_optional(&pool)
         .await;
@@ -105,7 +105,7 @@ pub async fn upload(State(pool): State<MySqlPool>, mut multipart: Multipart) -> 
 pub struct EditMoviePayload {
     pub movie_id: i32,
     pub name: String,
-    pub released: String,
+    pub released: i32,
     pub bio: String,
     pub genre: String,
     

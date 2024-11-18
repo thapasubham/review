@@ -32,6 +32,8 @@
 	<button type="submit">Upload</button>
 </form>
 
-{#if responseMessage}
+<!-- {#if responseMessage}
 	<p>{responseMessage}</p>
-{/if}
+{/if} -->
+<style>
+</style>

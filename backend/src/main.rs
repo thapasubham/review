@@ -12,6 +12,7 @@ use axum::{
 };
 
 use dotenv;
+use reviews::review;
 use sqlx::MySqlPool;
 use std::env;
 use std::net::SocketAddr;
@@ -36,7 +37,7 @@ async fn main() {
         .service(ServeDir::new("./src/images"));
     let app = Router::new()
         .nest_service("/image/", serve_file)
-        .route("/get_movies", get(reviews::movie::movies))
+        .route("/movie/id", get(reviews::movie::movies))
         .route("/members/login", post(members::user_api::login))
         .route("/member/register", post(members::register::member_register))
         .route(
@@ -48,6 +49,7 @@ async fn main() {
             put(members::update::update_password),
         )
         .route("/review/:movie_id", get(reviews::movie::get_details))
+        .route("/review/movies/:u_id", get(reviews::movie::get_movies))
         .route("/review/:movie_id/review", get(reviews::movie::get_reviews))
         .route(
             "/member/username/:m_id",
@@ -59,6 +61,8 @@ async fn main() {
         .route("/admin/movie/edit", put(admin::movie::edit_movie))
         .route("/admin/movie", get(admin::movie::get_movies))
         .route("/admin/movie/:m_id", get(admin::movie::get_movie))
+        .route("/admin/members/user", get(admin::view::get_users))
+        .route("/admin/view/movie", get(admin::view::get_movies))
         .route("/review/edit", put(reviews::review::edit))
         .route("/review/add", post(reviews::review::insert))
         .route(

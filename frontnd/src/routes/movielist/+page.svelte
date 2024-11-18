@@ -4,8 +4,21 @@
 	import HeaderComp from '../HeaderComp.svelte';
 	let movie = [];
 	onMount(async () => {
-		const response = await fetch('http://127.0.0.1:3000/get_movies');
-		movie = await response.json();
+		const cookieHeader = document.cookie;
+		const cookies = new Map(cookieHeader.split('; ').map((cookie) => cookie.split('=')));
+		const token = cookies.get('token');
+
+		try {
+			if (token) {
+				const response = await fetch(`http://127.0.0.1:3000/review/movies/${token}`);
+				movie = await response.json();
+			} else {
+				const response = await fetch('http://127.0.0.1:3000/movie/id');
+				movie = await response.json();
+			}
+		} catch (error) {
+			console.log(error);
+		}
 	});
 </script>
 

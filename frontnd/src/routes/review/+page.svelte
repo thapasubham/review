@@ -6,13 +6,14 @@
 
 	let id = $page.url.searchParams.get('id');
 	let movie = '';
-	let reviews = [];
+	let reviews = '';
 	let averageStar = 0.0;
 	let userReview = null;
 	let msg = '';
 	let edit = false;
 	let token = '';
 
+	let star = '';
 	onMount(async () => {
 		const cookieHeader = document.cookie;
 		const cookies = new Map(cookieHeader.split('; ').map((cookie) => cookie.split('=')));
@@ -30,13 +31,12 @@
 		}
 	});
 
-	let star = '';
 	function edited() {
 		edit = true;
 
 		msg = userReview.review_msg;
 
-		star = userReview.star;
+		//star = userReview.star;
 		console.log(star);
 	}
 
@@ -69,7 +69,7 @@
 				reviewed_by: reviewedById,
 				movie_id: parseInt(id),
 				review_msg: msg,
-				star: parseInt(formData.get('star'))
+				star: parseInt(star)
 			});
 
 			let response;
@@ -100,7 +100,7 @@
 					throw new Error('Network response was not ok');
 				}
 				alert(result);
-				window.location.reload(); // Use the message from the backend
+				window.location.reload();
 				console.log(result);
 			} else {
 				console.log('No response data received');
@@ -115,18 +115,20 @@
 
 <div class="outer_box">
 	<div class="movie_box">
+		<p class="movie_name">{movie.movie_name}</p>
 		<img
 			class="image"
 			src={`http://127.0.0.1:3000/image/${movie.img_name}`}
 			alt={movie.movie_name}
 		/>
-		<p class="movie_name">{movie.movie_name}</p>
+
 		<p class="genre">{movie.genre}</p>
 		<p class="year">Released: {movie.released}</p>
+		<p class="bio">{movie.about_movie}</p>
 		{#if averageStar == null}
 			<p>No reviews yet</p>
 		{:else}
-			<p>Average rating: {averageStar}</p>
+			<p>Average rating: {averageStar.toFixed(1)}</p>
 		{/if}
 	</div>
 </div>
@@ -141,7 +143,7 @@
 					<input type="text" name="review_msg" bind:value={msg} required />
 					<input type="hidden" name="movie_id" value={movie.movie_id} />
 					<label>Rating</label>
-					<select name="star" value={star} required>
+					<select bind:value={star} required>
 						<option value="1">1</option>
 						<option value="2">2</option>
 						<option value="3">3</option>
@@ -163,7 +165,7 @@
 				<p>Rating: {userReview.star}</p>
 				<button on:click={edited}>Edit</button>
 
-				<button on:click={deleteReview}>Delete</button>
+				<button class="delete" on:click={deleteReview}>Delete</button>
 			</div>
 		</div>
 	{/if}
@@ -277,6 +279,6 @@
 		font-size: 16px;
 	}
 	.delete:hover {
-		color: red;
+		background-color: red;
 	}
 </style>

@@ -5,4 +5,3 @@ export default defineConfig({
 	plugins: [sveltekit()]
 });
 
-server.hmr.overlay: false

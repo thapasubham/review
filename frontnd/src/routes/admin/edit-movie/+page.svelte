@@ -21,7 +21,7 @@
 
 		const data = await response.json();
 		if (data.success) {
-			goto('/admin/home'); // Redirect after successful edit
+			goto('/admin/home');
 		} else {
 			console.error('Edit failed:', data.message);
 		}
@@ -47,7 +47,7 @@
 <div class="real">
 	<h1>Edit Movie</h1>
 	<div class="container">
-		<img class="image" src="http://127.0.0.1:3000/image/{img}" />
+		<img class="image" src="http://127.0.0.1:3000/image/{img}" alt={name} />
 		<form on:submit|preventDefault={handleEdit}>
 			<label for="name">Movie Name:</label>
 			<input type="text" id="name" bind:value={name} required />
@@ -58,8 +58,14 @@
 			<label for="bio">Bio:</label>
 			<textarea id="bio" bind:value={bio} required></textarea>
 
-			<label for="genre">Genre:</label>
-			<input type="text" id="genre" bind:value={genre} required />
+			<label>Genre</label>
+			<select bind:value={genre}>
+				<option value="Comedy">Comedy</option>
+				<option value="Action">Action</option>
+				<option value="Crime">Crime</option>
+				<option value="Thriller">Thriller</option>
+				<option value="Sci-Fi">Sci-Fi</option>
+			</select>
 
 			<button type="submit">Update Movie</button>
 		</form>
@@ -92,7 +98,14 @@
 		text-align: center;
 		margin-top: 20px;
 	}
-
+	select {
+		width: 40%;
+		padding: 10px;
+		margin-top: 5px;
+		border: 1px solid #ccc;
+		border-radius: 5px;
+		font-size: 16px;
+	}
 	form {
 		max-width: 400px;
 		margin: 0 auto;

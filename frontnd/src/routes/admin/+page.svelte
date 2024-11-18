@@ -22,7 +22,7 @@
 			localStorage.setItem('admin_id', data.admin_id);
 
 			// Redirect to the home page
-			window.location('admin/home');
+			goto('admin/home');
 		} else {
 			// Show error message
 			error = 'Login failed. Please check your username or password.';

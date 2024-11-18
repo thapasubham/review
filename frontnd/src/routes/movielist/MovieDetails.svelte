@@ -54,7 +54,7 @@
 
 	.movie_box {
 		width: 20%;
-		height: 50%;
+
 		margin: 20px 0;
 		padding: 15px;
 		background-color: #040f25;

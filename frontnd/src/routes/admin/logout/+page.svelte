@@ -15,7 +15,7 @@
 		try {
 			const token = localStorage.getItem('token');
 			deleteCookie('token');
-			alert(mesg);
+			alert('Logout Sucessfull');
 		} catch (error) {
 			console.error('Logout error:', error);
 		}
